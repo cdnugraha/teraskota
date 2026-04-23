@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Agenda Hari Ini</title>
+  <style>
+    body {
+      font-family: Arial;
+      max-width: 500px;
+      margin: 40px auto;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+    }
+    ul {
+      padding: 0;
+      list-style: none;
+    }
+    li {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Agenda Hari Ini</h2>
+
+<input type="text" id="inputAgenda" placeholder="Masukkan agenda">
+<button onclick="submitAgenda()">Submit</button>
+
+<h3>List Hari Ini</h3>
+<ul id="listAgenda"></ul>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    orderBy
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // 🔥 GANTI DENGAN CONFIG KAMU
+  const firebaseConfig = {
+    apiKey: "AIzaSyAsdEL6MEzHeeguktzj8ZTtUR3ZubrAATY",
+    authDomain: "bpskota-61168.firebaseapp.com",
+    projectId: "bpskota-61168",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  function getTodayString() {
+    const today = new Date();
+    return today.toISOString().split("T")[0]; // YYYY-MM-DD
+  }
+
+  // 📥 SUBMIT DATA
+  window.submitAgenda = async function () {
+    const input = document.getElementById("inputAgenda");
+    const text = input.value.trim();
+
+    if (!text) return;
+
+    await addDoc(collection(db, "agenda"), {
+      text: text.toLowerCase(),
+      date: getTodayString(),
+      createdAt: new Date()
+    });
+
+    input.value = "";
+    loadAgenda();
+  };
+
+  // 📤 LOAD DATA HARI INI
+  async function loadAgenda() {
+    const list = document.getElementById("listAgenda");
+    list.innerHTML = "Loading...";
+
+    const today = getTodayString();
+
+    const q = query(
+      collection(db, "agenda"),
+      where("date", "==", today),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+
+    list.innerHTML = "";
+
+    if (snapshot.empty) {
+      list.innerHTML = "<li>Tidak ada agenda hari ini</li>";
+      return;
+    }
+
+    snapshot.forEach(doc => {
+      const li = document.createElement("li");
+      li.textContent = doc.data().text;
+      list.appendChild(li);
+    });
+  }
+
+  loadAgenda();
+</script>
+
+</body>
+</html>
