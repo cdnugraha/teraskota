@@ -3,36 +3,281 @@
 <head>
   <meta charset="UTF-8">
   <title>Agenda Hari Ini</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      font-family: Arial;
-      max-width: 500px;
-      margin: 40px auto;
-    }
-    input, button {
-      padding: 10px;
-      margin: 5px 0;
-      width: 100%;
-    }
-    ul {
-      padding: 0;
-      list-style: none;
-    }
-    li {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-  </style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    margin: 20px;
+    background: #f5f5f5;
+  }
+
+  .container {
+    display: flex;
+    gap: 20px;
+  }
+
+  .card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .left { flex: 2; }
+  .right { 
+    flex: 1;
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  tr:hover {
+    background: #f9f9f9;
+  }
+
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .action-btn {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: 0.2s;
+}
+
+.action-btn:hover {
+  background: #eee;
+}
+
+  .day {
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 6px;
+    min-height: 60px;
+    position: relative;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .day:hover {
+    background: #eee;
+  }
+
+  .active-day {
+    background: #1976d2;
+    color: white;
+  }
+
+  .has-data {
+    border: 2px solid #4caf50;
+  }
+
+  button {
+  background: #1976d2;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 120px;
+  align-self: flex-start;
+}
+
+button:hover {
+  background: #1565c0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+input {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  width: 100%;
+  font-size: 14px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+}
+
+h2 {
+  margin-bottom: 10px;
+}
+
+h3 {
+  margin-top: 20px;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  margin: 10% auto;
+  width: 300px;
+  border-radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.weekday-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #666;
+  text-align: center;
+}
+
+.nav-btn {
+  cursor: pointer;
+  font-size: 18px;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+.nav-btn:hover {
+  background: #eee;
+}
+
+.day {
+  position: relative;
+}
+
+.today {
+  border: 2px solid #2196f3;
+  background: #e3f2fd;
+}
+
+.badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #4caf50;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  min-width: 18px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .right {
+    order: 1; /* kalender di atas */
+  }
+
+  .left {
+    order: 2; /* form di bawah */
+  }
+
+  button {
+    width: 100%; /* tombol full di HP */
+  }
+}
+</style>
+
 </head>
 <body>
 
-<h2>Agenda Hari Ini</h2>
+  <div class="container">
 
-<input type="text" id="inputAgenda" placeholder="Masukkan agenda">
-<button onclick="submitAgenda()">Submit</button>
+  <div class="card left">
+<h2>Agenda BPS Kota Yogyakarta</h2>
 
-<h3>List Hari Ini</h3>
-<ul id="listAgenda"></ul>
+<div class="form-group">
+  <p>Masukan Agenda: 
+<input type="text" id="inputAgenda" placeholder="Input Agenda">
+<br/><br/>
+    Jam Mulai:
+    <input type="time" id="inputTime">
+    <br/><br/>
+    Jam Selesai:
+    <input type="time" id="inputEndTime">     
+    </p>
+    <button onclick="submitAgenda()">Simpan</button>
+</div>
+
+<h3 id="titleDate">List Agenda Hari Ini</h3>
+<table>
+   <thead>
+    <tr>
+       <th>No</th>
+       <th>Jam</th>
+       <th>Agenda</th>
+       <th>Aksi</th>
+     </tr>
+   </thead>
+   <tbody id="listAgenda"></tbody>
+ </table>
+ </div>
+
+ <!-- KANAN: KALENDER -->
+  <div class="card right">
+  <div class="calendar-header">
+    <span class="nav-btn" onclick="prevMonth()">⬅️</span>
+    <h3 id="monthTitle"></h3>
+    <span class="nav-btn" onclick="nextMonth()">➡️</span>
+  </div>
+
+  <div class="weekday-header">
+  <div>Sen</div>
+  <div>Sel</div>
+  <div>Rab</div>
+  <div>Kam</div>
+  <div>Jum</div>
+  <div>Sab</div>
+  <div>Min</div>
+</div>
+  <div id="calendar" class="calendar"></div>
+</div>
+
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -43,7 +288,10 @@
     getDocs,
     query,
     where,
-    orderBy
+    orderBy,
+    deleteDoc,
+    doc,
+    updateDoc
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // 🔥 GANTI DENGAN CONFIG KAMU
@@ -56,27 +304,232 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  let currentEditId = null;
+  let selectedDate = getTodayString();
+  let currentMonth = new Date().getMonth();
+  let currentYear = new Date().getFullYear();
+  //let datesWithData = new Set();
+  let dateCounts = {};
+
   function getTodayString() {
     const today = new Date();
     return today.toISOString().split("T")[0]; // YYYY-MM-DD
   }
 
+ /* document.getElementById("selectedDate").value = getTodayString();
+
+  document.getElementById("selectedDate").addEventListener("change", function () {
+  selectedDate = this.value;
+  loadAgenda();
+}); */
+
+function generateCalendar() {
+  const calendar = document.getElementById("calendar");
+  const todayStr = getTodayString();
+  calendar.innerHTML = "";
+
+  //const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  let firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  firstDay = (firstDay + 6) % 7; // ubah Minggu=0 jadi terakhir
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  const monthNames = [
+  "Januari","Februari","Maret","April","Mei","Juni",
+  "Juli","Agustus","September","Oktober","November","Desember"
+];
+
+document.getElementById("monthTitle").innerText =
+  `${monthNames[currentMonth]} ${currentYear}`;
+
+  // kosong sebelum tanggal 1
+  for (let i = 0; i < firstDay; i++) {
+    calendar.innerHTML += `<div></div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
+    let className = "day";
+
+    if (dateStr === selectedDate) className += " active-day";
+    if (dateStr === todayStr) className += " today";
+    const count = dateCounts[dateStr] || 0;
+
+    calendar.innerHTML += `
+      <div class="${className}" onclick="selectDate('${dateStr}')">
+        ${d}
+        ${count > 0 ? `<span class="badge">${count}</span>` : ""}
+      </div>
+    `;
+  }
+}
+
+async function loadDatesWithData() {
+  dateCounts = {};
+
+  const start = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-01`;
+  const end = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-31`;
+
+  const q = query(
+    collection(db, "agenda"),
+    where("date", ">=", start),
+    where("date", "<=", end)
+  );
+
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach(doc => {
+    const d = doc.data().date;
+
+    if (!dateCounts[d]) {
+      dateCounts[d] = 0;
+    }
+    dateCounts[d]++;
+  });
+
+  generateCalendar();
+}
+
+function formatDateLabel(dateStr) {
+  const today = new Date();
+  const selected = new Date(dateStr);
+
+  today.setHours(0, 0, 0, 0);
+  selected.setHours(0, 0, 0, 0);
+
+  const diffTime = selected - today;
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return "Hari ini";
+  if (diffDays === -1) return "Kemarin";
+  if (diffDays === 1) return "Besok";
+
+  // fallback → format normal
+  return new Date(dateStr).toLocaleDateString("id-ID", {
+  day: "numeric",
+  month: "long",
+  year: "numeric"
+});
+}
+
+window.selectDate = function(date) {
+  selectedDate = date;
+  loadAgenda();
+  generateCalendar();
+};
+
   // 📥 SUBMIT DATA
   window.submitAgenda = async function () {
     const input = document.getElementById("inputAgenda");
+    const inputTime = document.getElementById("inputTime");
+    const inputEndTime = document.getElementById("inputEndTime");
     const text = input.value.trim();
+    const time = inputTime.value;
+    const endTime = inputEndTime.value;
 
-    if (!text) return;
+       // if (!text) return;
+   if (!text || !time || !endTime) {
+   alert("Isi agenda dan jam!");
+   return;
+ }
+
+ if (endTime <= time) {
+  alert("Jam selesai harus setelah jam mulai");
+  return;
+}
 
     await addDoc(collection(db, "agenda"), {
       text: text.toLowerCase(),
-      date: getTodayString(),
+     // date: getTodayString(),
+      date: selectedDate,
+      time: time, // format "HH:mm"
+      endTime: endTime,
       createdAt: new Date()
     });
 
     input.value = "";
+    inputTime.value = "";
     loadAgenda();
   };
+
+  window.deleteAgenda = async function (id) {
+  if (!confirm("Hapus agenda ini?")) return;
+
+  await deleteDoc(doc(db, "agenda", id));
+  loadAgenda();
+};
+
+window.editAgenda = async function (id, oldText) {
+  const newText = prompt("Edit agenda:", oldText);
+
+  if (!newText || newText.trim() === oldText) return;
+
+  await updateDoc(doc(db, "agenda", id), {
+    text: newText.toLowerCase()
+  });
+
+  loadAgenda();
+};
+
+window.openEditModal = function (id, text, time) {
+  currentEditId = id;
+
+  document.getElementById("editText").value = text;
+  document.getElementById("editTime").value = time;
+
+  document.getElementById("editModal").style.display = "block";
+};
+
+window.closeModal = function () {
+  document.getElementById("editModal").style.display = "none";
+};
+
+window.saveEdit = async function () {
+  const newText = document.getElementById("editText").value.trim();
+  const newTime = document.getElementById("editTime").value;
+
+  if (!newText || !newTime) {
+    alert("Isi agenda dan jam!");
+    return;
+  }
+
+  await updateDoc(doc(db, "agenda", currentEditId), {
+    text: newText.toLowerCase(),
+    time: newTime
+  });
+
+  closeModal();
+  loadAgenda();
+};
+
+window.onclick = function (event) {
+  const modal = document.getElementById("editModal");
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+};
+
+window.prevMonth = async function () {
+  currentMonth--;
+
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear--;
+  }
+
+  await loadDatesWithData();
+};
+
+window.nextMonth = async function () {
+  currentMonth++;
+
+  if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear++;
+  }
+
+  await loadDatesWithData();
+};
 
   // 📤 LOAD DATA HARI INI
   async function loadAgenda() {
@@ -84,11 +537,14 @@
     list.innerHTML = "Loading...";
 
     const today = getTodayString();
+    //document.getElementById("titleDate").innerText = "Agenda: " + selectedDate;
+    document.getElementById("titleDate").innerText =
+    "Agenda: " + formatDateLabel(selectedDate);
 
     const q = query(
       collection(db, "agenda"),
-      where("date", "==", today),
-      orderBy("createdAt", "desc")
+     where("date", "==", selectedDate),
+     orderBy("time", "asc")
     );
 
     const snapshot = await getDocs(q);
@@ -96,19 +552,54 @@
     list.innerHTML = "";
 
     if (snapshot.empty) {
-      list.innerHTML = "<li>Tidak ada agenda hari ini</li>";
+     list.innerHTML = `
+    <tr>
+      <td colspan="4">Tidak ada agenda hari ini</td>
+    </tr>
+  `;
       return;
     }
 
+    let no = 1;
+    
+
     snapshot.forEach(doc => {
-      const li = document.createElement("li");
-      li.textContent = doc.data().text;
-      list.appendChild(li);
+     const data = doc.data();
+       const tr = document.createElement("tr");
+
+  tr.innerHTML = `
+    <td>${no++}</td>
+    <td>${data.time} - ${data.endTime || "-"}</td>
+    <td>${data.text}</td>
+    <td>
+      <span class="action-btn" title="Edit" onclick="openEditModal('${doc.id}', \`${data.text}\`, '${data.time}')">✏️</span>
+      <span class="action-btn delete-btn" title="Hapus" onclick="deleteAgenda('${doc.id}')">❌</span>
+    </td>
+  `;
+
+  list.appendChild(tr);
     });
+
+    document.getElementById("titleDate").innerText = "Agenda: " + formatDateLabel(selectedDate);
   }
 
+  
+  await loadDatesWithData();
   loadAgenda();
 </script>
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <h3>Edit Agenda</h3>
 
+    <input type="text" id="editText" placeholder="Agenda">
+    <input type="time" id="editTime">
+
+    <div style="margin-top:10px;">
+      <button onclick="saveEdit()">Simpan</button>
+      <button onclick="closeModal()">Batal</button>
+    </div>
+  </div>
+</div>
 </body>
+
 </html>
